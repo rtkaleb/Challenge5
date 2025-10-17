@@ -99,6 +99,173 @@ order-service/
 
 ---
 
+<details> 
+<summary>Sprint 1</summary>
+
+# 🏁 Sprint 1 – Project Setup & Database Integration
+## ⚙️ Step-by-Step Installation Tutorial
+
+### 🧰 1. Software Requirements
+
+| Tool | Recommended Version | Purpose |
+|------|----------------------|----------|
+| **Java JDK** | 17 or higher | Required to run Spring Boot 3.0 |
+| **Maven** | 3.9+ | Dependency management and build automation |
+| **Spring Boot** | 3.0+ | Web application framework |
+| **MySQL / PostgreSQL** | Latest stable | Database management |
+| **IntelliJ IDEA / VS Code / Eclipse** | Any | Development environment |
+| **Git + GitHub Account** | – | Version control and repository hosting |
+| **Postman** | Latest | API testing tool |
+
+---
+
+### 🪜 2. Install Java JDK
+
+#### 🔹 Windows
+1. Go to [https://jdk.java.net/17](https://jdk.java.net/17) or [Oracle JDK](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html).  
+2. Download and install.  
+3. Verify the installation:
+   ```bash
+   java -version
+   ```
+
+#### 🔹 Linux / Mac
+```bash
+sudo apt install openjdk-17-jdk
+java -version
+```
+
+---
+
+### 🧱 3. Install Maven
+Verify installation:
+```bash
+mvn -v
+```
+If not installed:
+```bash
+sudo apt install maven
+```
+On Windows, use the [Maven binary installer](https://maven.apache.org/download.cgi).
+
+---
+
+### 🌱 4. Create a Spring Boot Project
+You can use the [Spring Initializr](https://start.spring.io/) or your IDE’s generator.
+
+**Project settings:**
+- **Project:** Maven
+- **Language:** Java
+- **Spring Boot:** 3.0.x  
+- **Dependencies:**  
+  - *Spring Web*  
+  - *Spring Data JPA*  
+  - *MySQL Driver*  
+  - *Lombok* (optional for clean code)
+
+Download the generated ZIP, extract it, and open it in your IDE.
+
+---
+
+### 🗄️ 5. Database Configuration
+Create a new database manually:
+```sql
+CREATE DATABASE orders_db;
+```
+
+Then, open `src/main/resources/application.properties` and configure:
+```properties
+spring.datasource.url=jdbc:mysql://localhost:3306/orders_db
+spring.datasource.username=root
+spring.datasource.password=yourPassword
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+server.port=8080
+```
+
+---
+
+### 🔗 6. Initialize Git and Connect to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial Spring Boot setup"
+git branch -M main
+git remote add origin git@github.com:rtkaleb/Challenge5.git
+git push -u origin main
+```
+
+---
+
+## 🧩 Detailed Tasks Developed
+
+| Step | Area | Description / Implementation | Output / Result |
+|------|------|-------------------------------|------------------|
+| 1 | **Project Initialization** | Spring Boot 3.0 project created using Maven. Defined dependencies in `pom.xml`. | Functional Spring Boot base project. |
+| 2 | **Entity Design** | Created the `Order` entity with JPA annotations. Fields: `id`, `customerName`, `product`, `quantity`, `price`, `date`. | `Order.java` under `/model`. |
+| 3 | **Repository Creation** | Implemented interface `OrderRepository` extending `JpaRepository<Order, Long>` for CRUD operations. | Automatic CRUD methods ready. |
+| 4 | **Service Layer** | Added `OrderService` to manage business logic. Methods: `createOrder()`, `listOrders()`. | Centralized business logic in `/service`. |
+| 5 | **REST Controller** | Created `OrderController` with endpoints: <br>`POST /api/orders` – create order <br>`GET /api/orders` – retrieve orders | Functional API for order management. |
+| 6 | **Database Integration** | Connected Spring Boot app to MySQL DB using JPA (Hibernate). Verified schema auto-creation. | Table `orders` generated automatically. |
+| 7 | **Testing with Postman** | Verified both endpoints: <br>`POST` → inserts order into DB <br>`GET` → lists existing orders | Successful responses (status 200). |
+| 8 | **Documentation and Version Control** | Wrote detailed `README.md`, added screenshots of Postman, explained endpoints, and pushed repo to GitHub via SSH. | Public repository `Challenge5` ready. |
+
+---
+
+## 🧪 Testing Results
+
+**Tool:** Postman  
+
+| Endpoint | Method | Description | Expected Response | Status |
+|-----------|---------|-------------|------------------|--------|
+| `/api/orders` | POST | Creates new order | JSON confirmation + saved record in DB | ✅ 200 OK |
+| `/api/orders` | GET | Lists all orders | Array of orders in JSON | ✅ 200 OK |
+
+---
+
+## 🧠 Key Decisions and Good Practices
+
+- Adopted **layered architecture** (`controller → service → repository`).  
+- Used **Spring Boot 3.0 + JDK 17** for performance and compatibility.  
+- Managed dependencies via **Maven**.  
+- Established **clear Git workflow** with commits and push to GitHub via SSH.  
+- Validated API endpoints through Postman before integrating additional features.  
+
+---
+
+## 📸 Evidence – Screenshots
+
+Below are key images that illustrate the progress and testing of Sprint 1.  
+Store them in a folder named `Images` inside your project (e.g., `/Images`).
+
+| No. | Screenshot | Description |
+|-----|-------------|-------------|
+| 1 | ![Project Initialization](Images/1.ProjectInitialization.png) | Creation of the Spring Boot project with the necessary dependencies. |
+| 2 | ![Database Configuration](Images/2.DatabaseConfiguration.png) | Example of the configured `application.properties` file and connection to MySQL. |
+| 3 | ![Entity Creation](Images/3.EntityCreation.png) | The `Order` entity with JPA annotations and attributes. |
+| 4 | ![Postman POST Test](Images/4.PostmanPOST.png) | Successful creation of an order in the database through the `/api/orders` POST endpoint. |
+| 5 | ![Postman GET Test](Images/5.PostmanGET.png) | JSON response showing the list of stored orders. |
+| 6 | ![GitHub Repository](Images/6.RepositoryUpload.png) | Final upload of the project to GitHub through SSH connection. |
+
+---
+
+## 📚 Deliverables
+
+- ✅ Functional Spring Boot backend project  
+- ✅ Connected relational database  
+- ✅ Tested REST API with Postman  
+- ✅ `README.md` documentation with setup instructions  
+- ✅ Source code uploaded to GitHub repository [`Challenge5`](https://github.com/rtkaleb/Challenge5)  
+- ✅ Visual evidence of the development process  
+
+---
+
+
+</details> 
+
+---
+
 ## 🧰 Technical Stack
 
 | Category | Technology | Purpose |
@@ -113,7 +280,7 @@ order-service/
 
 ---
 
-## ⚙️ Installation and Execution
+## ⚙️ General Installation and Execution
 
 ### 🧩 Development Environment (H2)
 ```bash
