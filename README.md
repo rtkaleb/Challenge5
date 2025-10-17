@@ -237,7 +237,6 @@ git push -u origin main
 ## 📸 Evidence – Screenshots
 
 Below are key images that illustrate the progress and testing of Sprint 1.  
-Store them in a folder named `Images` inside your project (e.g., `/Images`).
 
 | No. | Screenshot | Description |
 |-----|-------------|-------------|
