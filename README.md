@@ -1,4 +1,4 @@
-# 🧩 Reto 5 – Order Management System  
+# 🧩 Challenge 5 – Order Management System  
 ### Spring Boot 3.x | Java 17 | PostgreSQL | REST API | Scrum Methodology
 
 ---
