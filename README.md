@@ -263,6 +263,224 @@ Below are key images that illustrate the progress and testing of Sprint 1.
 
 </details> 
 
+<details> 
+<summary>Sprint 2</summary>
+
+# 🏁 Sprint 2
+## Environment Profiles & System Variables Configuration
+
+---
+
+### 📘 **Sprint Objective**
+
+This Sprint focuses on configuring **environment-specific profiles** and **system environment variables** in the Spring Boot project.  
+These configurations allow the application to run safely and efficiently across multiple environments: **development**, **testing**, and **production**.
+
+---
+
+### ⚙️ **1. Environment Profiles Configuration**
+
+The project now includes three independent configuration profiles:
+
+| Profile | File Name | Purpose |
+|----------|------------|----------|
+| **Development** | `application-dev.yml` | Local development setup with visible logs and flexible schema updates. |
+| **Testing** | `application-test.yml` | Automated testing environment using an in-memory H2 database. |
+| **Production** | `application-prod.yml` | Secure configuration for deployment on a server using environment variables. |
+
+All configuration files are located in:
+
+```
+src/main/resources/
+├── application.yml
+├── application-dev.yml
+├── application-test.yml
+└── application-prod.yml
+```
+
+The main `application.yml` file defines common settings shared across environments (such as app name, logging, and default port).  
+Each environment-specific YAML file overrides or extends those base configurations.
+
+---
+
+### 🌍 **2. System Environment Variables**
+
+System variables are used to store sensitive information and environment-specific parameters.
+
+#### 🔐 Common Variables
+| Variable | Description | Example |
+|-----------|--------------|----------|
+| `SPRING_PROFILES_ACTIVE` | Defines which profile to run (`dev`, `test`, `prod`) | `dev` |
+| `SERVER_PORT` | Port on which the server runs | `8080` |
+| `DB_HOST` | Database host address | `localhost` |
+| `DB_PORT` | Database port | `5432` |
+| `DB_NAME` | Database name | `orders_dev` |
+| `DB_USER` | Database username | `postgres` |
+| `DB_PASS` | Database password | `super-secret` |
+| `JWT_SECRET` | Security token key (only for production) | `change-this-key` |
+
+#### 💻 Setting Variables (Windows PowerShell)
+```powershell
+$env:SPRING_PROFILES_ACTIVE="dev"
+$env:DB_HOST="localhost"
+$env:DB_PORT="5432"
+$env:DB_NAME="orders_dev"
+$env:DB_USER="postgres"
+$env:DB_PASS="12345"
+mvn spring-boot:run
+```
+
+#### 🐧 Setting Variables (Linux/macOS)
+```bash
+export SPRING_PROFILES_ACTIVE=dev
+export DB_HOST=localhost
+export DB_PORT=5432
+export DB_NAME=orders_dev
+export DB_USER=postgres
+export DB_PASS=12345
+mvn spring-boot:run
+```
+
+> ⚠️ **Important:** Never upload `.env` file with real credentials to GitHub.  
+> Use a safe `.env.template` as a reference example.
+
+---
+
+### 🧩 **3. Switching Between Profiles**
+
+There are three ways to change the environment profile:
+
+**A. Using Command Line Arguments**
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=test
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+**B. Setting a System Variable**
+```bash
+setx SPRING_PROFILES_ACTIVE "prod"
+```
+
+**C. Inside `application.yml`** *(Not recommended for production)*:
+```yaml
+spring:
+  profiles:
+    active: dev
+```
+
+---
+
+### 🧪 **4. Testing Environment**
+
+The testing environment (`application-test.yml`) uses an in-memory H2 database:
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:orders_test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+```
+
+This configuration is automatically activated during tests using:
+```java
+@ActiveProfiles("test")
+```
+
+Example test file:
+```java
+@SpringBootTest
+@ActiveProfiles("test")
+class HealthTest {
+  @Test
+  void contextLoads() {}
+}
+```
+
+---
+
+### 🧾 **5. Peer Reviews**
+
+During Sprint 2, **partial peer reviews** were implemented to ensure code quality and configuration consistency.
+
+**Review checklist:**
+- [x] Configuration files clearly separated by profile.  
+- [x] No sensitive credentials stored in YAML files.  
+- [x] Environment variables properly defined and used.  
+- [x] Tests executed with `test` profile successfully.  
+- [x] Updated README documentation with clear instructions.
+
+**Peer Review Log:**  
+Located in `/docs/peer-reviews.md`  
+Example entry:
+```
+# Peer Reviews – Sprint 2
+2025-10-20  
+Reviewer: Kaleb Torres  
+Findings:
+1) application-prod.yml corrected to use environment variables.
+2) Verified all profiles execute correctly.
+3) Documentation updated successfully.
+Status: Approved ✅
+```
+
+---
+
+### 📂 **6. Repository Structure**
+
+```
+Challenge5/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       ├── application-dev.yml
+│   │       ├── application-test.yml
+│   │       └── application-prod.yml
+│   └── test/
+│       └── java/
+│           └── com/kaleb/orders/health/HealthTest.java
+├── docs/
+│   └── peer-reviews.md
+├── .env.template
+├── .gitignore
+├── pom.xml
+└── README.md
+```
+
+---
+
+### 📜 **7. Key Takeaways**
+
+✅ The project can now adapt dynamically to multiple environments.  
+✅ Sensitive data (DB credentials, tokens) are no longer stored in the source code.  
+✅ Environment-specific logging and behavior improve debugging and scalability.  
+✅ Documentation allows other developers to reproduce and deploy the project safely.
+
+---
+
+### 🚀 **Next Step – Sprint 3 Preview**
+
+In **Sprint 3**, the focus will be on:
+- Integrating a persistence layer and connecting the backend logic with the database.  
+- Implementing CRUD operations.  
+- Running tests for data consistency across all environments.
+
+
+</details> 
+
+<details> 
+<summary>Sprint 3</summary>
+
+
+
+</details> 
+
 ---
 
 ## 🧰 Technical Stack
