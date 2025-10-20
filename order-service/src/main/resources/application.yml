@@ -10,6 +10,10 @@ spring:
     open-in-view: false
     properties:
       hibernate.format_sql: true
+    defer-datasource-initialization: true   # <-- CLAVE
+  sql:
+    init:
+      mode: always                           # <-- CLAVE
   h2:
     console:
       enabled: true
