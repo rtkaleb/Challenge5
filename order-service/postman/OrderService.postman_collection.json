@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "Order Service – Sprint 1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "CRUD de órdenes con ejemplos y comentarios"
+  },
+  "item": [
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "url": {"raw": "http://localhost:8080/api/v1/orders", "host": ["http://localhost"], "port":"8080", "path":["api","v1","orders"]},
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"customerName\": \"John Doe\",\n \"customerEmail\": \"john@example.com\",\n \"items\": [\n { \"sku\": \"SKU-1\", \"name\": \"Mouse\", \"quantity\": 2, \"unitPrice\": 15.50 },\n { \"sku\": \"SKU-2\", \"name\": \"Keyboard\", \"quantity\": 1, \"unitPrice\": 45.00 }\n ],\n \"totalAmount\": 76.00\n}"
+        }
+      },
+      "response": [
+        {
+          "name": "201 Created",
+          "originalRequest": {},
+          "status": "Created",
+          "code": 201,
+          "body": "{\n \"id\": \"<uuid>\",\n \"customerName\": \"John Doe\",\n \"status\": \"NEW\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get by ID",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/v1/orders/{{orderId}}"
+      }
+    },
+    {
+      "name": "List (paged)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:8080/api/v1/orders?page=0&size=10"
+      }
+    },
+    {
+      "name": "Update (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "url": "http://localhost:8080/api/v1/orders/{{orderId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n \"customerName\": \"John X. Doe\",\n \"customerEmail\": \"johnx@example.com\",\n \"items\": [ { \"sku\": \"SKU-1\", \"name\": \"Mouse\", \"quantity\": 1, \"unitPrice\": 15.50 } ],\n \"totalAmount\": 15.50\n}"
+        }
+      }
+    },
+    {
+      "name": "Update Status (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [{"key":"Content-Type","value":"application/json"}],
+        "url": "http://localhost:8080/api/v1/orders/{{orderId}}/status",
+        "body": {"mode":"raw","raw":"{\n \"status\": \"PAID\"\n}"}
+      }
+    },
+    {
+      "name": "Delete",
+      "request": {"method":"DELETE","url":"http://localhost:8080/api/v1/orders/{{orderId}}"}
+    }
+  ],
+  "variable": [ {"key": "orderId", "value": ""} ]
+}
