@@ -240,12 +240,12 @@ Below are key images that illustrate the progress and testing of Sprint 1.
 
 | No. | Screenshot | Description |
 |-----|-------------|-------------|
-| 1 | ![Project Initialization](Images/1.ProjectInitialization.png) | Creation of the Spring Boot project with the necessary dependencies. |
-| 2 | ![Database Configuration](Images/2.DatabaseConfiguration.png) | Example of the configured `application.properties` file and connection to MySQL. |
-| 3 | ![Entity Creation](Images/3.EntityCreation.png) | The `Order` entity with JPA annotations and attributes. |
-| 4 | ![Postman POST Test](Images/4.PostmanPOST.png) | Successful creation of an order in the database through the `/api/orders` POST endpoint. |
-| 5 | ![Postman GET Test](Images/5.PostmanGET.png) | JSON response showing the list of stored orders. |
-| 6 | ![GitHub Repository](Images/6.RepositoryUpload.png) | Final upload of the project to GitHub through SSH connection. |
+| 1 | ![Project Initialization](Images/imagen1.png) | Creation of the Spring Boot project with the necessary dependencies. |
+| 2 | ![Database Configuration](Images/imagen2.png) | Example of the configured `application.properties` file and connection to MySQL. |
+| 3 | ![Entity Creation](Images/imagen3.png) | The `Order` entity with JPA annotations and attributes. |
+| 4 | ![Postman POST Test](Images/imagen4.png) | Successful creation of an order in the database through the `/api/orders` POST endpoint. |
+| 5 | ![Postman GET Test](Images/imagen5.png) | JSON response showing the list of stored orders. |
+| 6 | ![GitHub Repository](Images/imagen6.png) | Final upload of the project to GitHub through SSH connection. |
 
 ---
 
