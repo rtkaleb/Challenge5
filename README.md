@@ -476,6 +476,403 @@ In **Sprint 3**, the focus will be on:
 
 <details> 
 <summary>Sprint 3</summary>
+## **OpenAPI (Swagger) Documentation and Comprehensive Test Suite Implementation**
+
+---
+
+## 📘 1. Project Context and Purpose
+
+The third sprint of **Challenge 5** focused on enhancing the **Order Service API** by introducing industry-standard documentation and quality control mechanisms.  
+This included the integration of **Swagger/OpenAPI** for interactive documentation and the creation of an **automated testing framework** covering the main functional and validation scenarios.
+
+This phase consolidates the prior sprints, which included:
+- ✅ *Sprint 1*: Base architecture and order creation resource.
+- ✅ *Sprint 2*: Profile-based configuration and environment variable management.
+- ✅ *Sprint 3*: Documentation and testing for validation and reliability.
+
+The overall goal was to ensure that the **API is production-ready**, maintainable, and verifiable by the Digital NAO technical review team.
+
+---
+
+## 🧠 2. Objectives and Deliverables
+
+### 🎯 **Main Objectives**
+1. Implement **OpenAPI (Swagger)** to document all REST resources in a standardized format.
+2. Ensure **validation annotations** (`@NotNull`, `@Positive`, etc.) are reflected in the API schema.
+3. Create a **complete automated test suite** with both **unit** and **integration tests**.
+4. Generate coverage reports using **Jacoco** to measure code testability.
+5. Ensure all source code, configurations, and documentation are uploaded and accessible on GitHub.
+
+### 📦 **Deliverables**
+- `docs/openapi.yaml` exported from the running service.
+- Swagger UI accessible at `/swagger-ui.html`.
+- Unit tests (`*Test.java`) and integration tests (`*IT.java`) committed.
+- Jacoco HTML report in `target/site/jacoco/index.html`.
+- Updated `README.md` and project configuration (`application.yml`).
+
+---
+
+## 🧱 3. Project Setup and Prerequisites
+
+### ⚙️ **Technical Requirements**
+| Tool | Minimum Version | Purpose |
+|------|------------------|----------|
+| Java | 17 | Runtime for Spring Boot |
+| Spring Boot | 3.5.x | Web & data layer |
+| Maven | 3.8+ | Dependency and build management |
+| JUnit | 5 | Unit testing framework |
+| Mockito | 5 | Mocking framework |
+| Jacoco | 0.8.12 | Code coverage |
+| OpenAPI | 3.0+ | API documentation standard |
+
+### 🧰 **Branch Setup**
+Isolate Sprint 3 work in a dedicated branch:
+```bash
+git checkout -b sprint-3/openapi-tests
+```
+
+---
+
+## 📘 4. OpenAPI (Swagger) Documentation
+
+### 🧩 4.1 Dependency Configuration (`pom.xml`)
+Add the official OpenAPI starter dependency for Spring Boot 3:
+```xml
+<dependency>
+  <groupId>org.springdoc</groupId>
+  <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+  <version>2.6.0</version>
+</dependency>
+```
+This package automatically detects annotated controllers and DTOs to generate an interactive Swagger UI and an OpenAPI specification.
+
+### 🧩 4.2 Application Configuration (`application.yml`)
+```yaml
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    display-request-duration: true
+    operationsSorter: method
+    tagsSorter: alpha
+```
+**Exposed endpoints:**
+- Swagger UI → `http://localhost:8080/swagger-ui.html`  
+- OpenAPI JSON → `http://localhost:8080/v3/api-docs`  
+- OpenAPI YAML → `http://localhost:8080/v3/api-docs.yaml`
+
+### 🧩 4.3 OpenAPI Metadata Configuration
+Create `src/main/java/com/nao/retail/orders/config/OpenApiConfig.java`:
+```java
+package com.nao.retail.orders.config;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.*;
+import io.swagger.v3.oas.annotations.servers.Server;
+
+@OpenAPIDefinition(
+  info = @Info(
+    title = "Order Service API",
+    version = "1.0.0",
+    description = "REST API for managing customer orders in the retail platform.",
+    contact = @Contact(name = "Digital NAO Support", email = "support@digitalnao.example"),
+    license = @License(name = "MIT License")
+  ),
+  servers = {
+    @Server(url = "http://localhost:8080", description = "Development environment"),
+    @Server(url = "https://prod.digitalnao.example", description = "Production environment")
+  }
+)
+public class OpenApiConfig {
+}
+```
+
+### 🧩 4.4 Annotating Controllers and DTOs
+
+**Controller — example**
+```java
+@RestController
+@RequestMapping("/api/v1/orders")
+@Tag(name = "Orders", description = "Endpoints for order management")
+public class OrderController {
+
+  private final OrderService service;
+
+  public OrderController(OrderService service) { this.service = service; }
+
+  @Operation(
+    summary = "Create a new order",
+    description = "Creates a new order with the provided items and returns the generated details."
+  )
+  @ApiResponses({
+    @ApiResponse(responseCode = "201", description = "Order successfully created"),
+    @ApiResponse(responseCode = "400", description = "Invalid input data"),
+    @ApiResponse(responseCode = "422", description = "Validation or business logic error")
+  })
+  @PostMapping
+  public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CreateOrderRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+  }
+
+  @Operation(summary = "Get order by ID")
+  @ApiResponses({
+    @ApiResponse(responseCode = "200", description = "Order found"),
+    @ApiResponse(responseCode = "404", description = "Order not found")
+  })
+  @GetMapping("/{id}")
+  public ResponseEntity<OrderResponse> getById(@PathVariable String id) {
+    return ResponseEntity.ok(service.findById(id));
+  }
+}
+```
+
+**DTO — example**
+```java
+@Schema(name = "CreateOrderRequest", description = "Payload for creating a new order")
+public class CreateOrderRequest {
+
+  @NotBlank
+  @Schema(example = "CUST-001")
+  private String customerId;
+
+  @Size(min = 1)
+  @Schema(description = "List of items included in the order")
+  private List<Item> items;
+
+  @Schema(name = "Item", description = "Represents an order item")
+  public static class Item {
+    @NotBlank @Schema(example = "SKU-12345") private String sku;
+    @NotBlank @Schema(example = "Mechanical Keyboard") private String name;
+    @Positive @Schema(example = "2") private int quantity;
+    @NotNull  @Positive @Schema(example = "899.90") private BigDecimal unitPrice;
+    // getters/setters
+  }
+}
+```
+
+### 🧩 4.5 Exporting OpenAPI Specification
+Run and export:
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mkdir -p docs
+curl -s http://localhost:8080/v3/api-docs.yaml -o docs/openapi.yaml
+```
+Commit the generated `docs/openapi.yaml` to version control.
+
+---
+
+## 🧪 5. Testing and Quality Validation
+
+Testing is divided into **unit**, **controller (slice)**, and **integration** layers.
+
+### 🧩 5.1 Unit Tests (Business Logic)
+`src/test/java/com/nao/retail/orders/service/OrderServiceTest.java`
+```java
+@Test
+void create_ok_whenValidOrder() {
+  var req = new CreateOrderRequest();
+  req.setCustomerId("CUST-001");
+  var item = new Item();
+  item.setSku("SKU-100");
+  item.setName("Wireless Mouse");
+  item.setQuantity(2);
+  item.setUnitPrice(new BigDecimal("299.90"));
+  req.setItems(List.of(item));
+
+  when(repo.save(any(Order.class))).thenAnswer(inv -> inv.getArgument(0));
+
+  OrderResponse result = service.create(req);
+
+  assertThat(result.getTotal()).isEqualByComparingTo("599.80");
+  verify(repo, times(1)).save(any(Order.class));
+}
+```
+
+### 🧩 5.2 Controller Tests (Mocked Web Layer)
+`src/test/java/com/nao/retail/orders/controller/OrderControllerTest.java`
+```java
+@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+
+  @Autowired MockMvc mvc;
+  @MockBean OrderService service;
+  @Autowired ObjectMapper mapper;
+
+  @Test
+  void create_returns201_whenValidRequest() throws Exception {
+    var req = new CreateOrderRequest();
+    var item = new Item();
+    item.setSku("SKU-1"); item.setName("Laptop"); item.setQuantity(1);
+    item.setUnitPrice(new BigDecimal("1500"));
+    req.setCustomerId("KAL-001");
+    req.setItems(List.of(item));
+
+    var res = new OrderResponse();
+    res.setId("ORD-001");
+    res.setCustomerId("KAL-001");
+    res.setTotal(new BigDecimal("1500"));
+    when(service.create(any())).thenReturn(res);
+
+    mvc.perform(post("/api/v1/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(mapper.writeValueAsString(req)))
+      .andExpect(status().isCreated())
+      .andExpect(jsonPath("$.id").value("ORD-001"))
+      .andExpect(jsonPath("$.total").value(1500.0));
+  }
+
+  @Test
+  void create_returns400_whenInvalidPayload() throws Exception {
+    var req = new CreateOrderRequest(); // missing required fields
+    mvc.perform(post("/api/v1/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(mapper.writeValueAsString(req)))
+      .andExpect(status().isBadRequest());
+  }
+}
+```
+
+### 🧩 5.3 Integration Tests (Full Context)
+`src/test/java/com/nao/retail/orders/integration/OrderControllerIT.java`
+```java
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class OrderControllerIT {
+
+  @Autowired MockMvc mvc;
+  @Autowired ObjectMapper om;
+
+  @Test
+  void full_cycle_create_and_retrieve_order() throws Exception {
+    var req = new CreateOrderRequest();
+    var item = new Item();
+    item.setSku("SKU-IT"); item.setName("Keyboard"); item.setQuantity(2);
+    item.setUnitPrice(new BigDecimal("500"));
+    req.setCustomerId("TEST-001");
+    req.setItems(List.of(item));
+
+    var create = mvc.perform(post("/api/v1/orders")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(om.writeValueAsString(req)))
+      .andExpect(status().isCreated())
+      .andReturn();
+
+    String id = om.readTree(create.getResponse().getContentAsString()).get("id").asText();
+
+    mvc.perform(get("/api/v1/orders/{id}", id))
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.customerId").value("TEST-001"))
+      .andExpect(jsonPath("$.total").value(1000.0));
+  }
+
+  @Test
+  void get_returns404_whenNotFound() throws Exception {
+    mvc.perform(get("/api/v1/orders/{id}", "DOES-NOT-EXIST"))
+      .andExpect(status().isNotFound());
+  }
+}
+```
+
+### 🧩 5.4 Test Environment Configuration
+`src/test/resources/application-test.yml`
+```yaml
+spring:
+  datasource:
+    url: jdbc:h2:mem:orders_test;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driverClassName: org.h2.Driver
+    username: sa
+    password: sa
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  sql:
+    init:
+      mode: never
+
+logging:
+  level:
+    org.springframework.test: INFO
+
+springdoc:
+  swagger-ui:
+    enabled: true
+```
+
+### 🧩 5.5 Running Tests and Generating Coverage
+```bash
+mvn clean test                 # unit tests
+mvn verify                     # integration + Jacoco report
+# Coverage report:
+#   target/site/jacoco/index.html
+```
+
+**Coverage target:** ≥ **80%** total (services/controllers/validation paths).
+
+---
+
+## 🧩 6. Quality Assurance and Review Checklist
+
+- [ ] Swagger UI loads successfully at `/swagger-ui.html`.
+- [ ] Endpoints annotated with `@Operation`, `@ApiResponses`, `@Schema`.
+- [ ] DTOs define examples for request/response payloads.
+- [ ] Validation errors return appropriate HTTP codes (400/422).
+- [ ] OpenAPI YAML exported and versioned at `docs/openapi.yaml`.
+- [ ] Test suite covers success, edge, and failure scenarios.
+- [ ] Jacoco coverage ≥ 80%.
+- [ ] Peer review completed and approved before merge.
+- [ ] GitHub repo shared with the Digital NAO reviewers.
+
+---
+
+## 🧩 7. Repository Structure Overview
+```
+order-service/
+│
+├─ src/
+│  ├─ main/java/com/nao/retail/orders/
+│  │  ├─ controller/
+│  │  ├─ service/
+│  │  ├─ entity/
+│  │  └─ config/
+│  └─ test/java/com/nao/retail/orders/
+│     ├─ service/
+│     ├─ controller/
+│     └─ integration/
+│
+├─ docs/openapi.yaml
+├─ src/main/resources/application.yml
+├─ src/test/resources/application-test.yml
+├─ pom.xml
+├─ README.md
+└─ target/site/jacoco/
+```
+
+---
+
+## 🧩 8. Results and Outcomes
+
+### ✅ Technical Achievements
+- Integrated **Swagger/OpenAPI** documentation.
+- Implemented **unit**, **controller**, and **integration** tests.
+- Isolated test environment with **H2** and Spring profiles.
+- Automated **Jacoco** coverage report.
+- Standardized documentation and peer review workflow.
+
+### 📈 Functional Impact
+- Clear endpoint documentation for client developers.
+- Increased reliability through automated test coverage.
+- Faster onboarding thanks to interactive Swagger UI.
+
+---
+
+## 🧩 9. Conclusions
+
+By completing **Sprint 3**, the **Order Service API** reached a mature, production-ready state.  
+The integration of **OpenAPI** ensures transparency and accessibility, while the **automated testing suite** guarantees continuous quality and stable evolution of the codebase.
 
 
 
