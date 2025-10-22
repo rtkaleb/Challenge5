@@ -476,6 +476,7 @@ In **Sprint 3**, the focus will be on:
 
 <details> 
 <summary>Sprint 3</summary>
+
 ## **OpenAPI (Swagger) Documentation and Comprehensive Test Suite Implementation**
 
 ---
