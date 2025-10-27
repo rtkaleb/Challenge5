@@ -1,0 +1,30 @@
+# ===============================================
+# Perfil: Desarrollo con PostgreSQL (dev-pg)
+# ===============================================
+# Propósito: Para desarrollar y probar directamente contra la base de datos
+# PostgreSQL local, pero con la comodidad de un entorno de desarrollo.
+
+spring:
+  # --- Base de Datos PostgreSQL ---
+  datasource:
+    url: jdbc:postgresql://localhost:5432/meli_db
+    username: postgres
+    # Para este perfil de desarrollo, está bien tener la contraseña aquí para mayor comodidad.
+    # NUNCA haríamos esto en el perfil de producción.
+    password: Millon123
+  
+  # --- Configuración de JPA/Hibernate ---
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # Usamos 'update' para que Hibernate pueda hacer pequeños ajustes a las tablas si es necesario.
+      ddl-auto: update
+    # Mostramos el SQL en la consola para que puedas ver qué consultas se están ejecutando.
+    show-sql: true
+
+  # No necesitamos la consola H2 en este perfil.
+  h2:
+    console:
+      enabled: false

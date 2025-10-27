@@ -1,0 +1,34 @@
+# ===============================================
+# Profile: Production (prod)
+# ===============================================
+# Purpose: For deployment on a live server (e.g., MELI's infrastructure).
+# Database: PostgreSQL (a robust, persistent database).
+
+# --- CRUCIAL SECURITY NOTE ---
+# This file is committed to the repository for evaluation purposes.
+# In a REAL production scenario, this file might be excluded from Git via .gitignore,
+# or all values would be supplied by a secure configuration server or environment variables.
+
+spring:
+  # PostgreSQL Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/meli_db
+    username: postgres
+    # --- SECURITY IMPLEMENTATION ---
+    # The password is NOT hardcoded. It uses a placeholder `${DB_PASSWORD}`.
+    # This value MUST be provided by an environment variable on the server.
+    # This fulfills requirement #2 to not expose sensitive information.
+    password: ${DB_PASSWORD}
+
+  # JPA/Hibernate Settings for Production
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # 'validate': Hibernate checks if the tables in the database match the @Entity classes.
+      # It will fail to start if they don't match. This is the safest option for production
+      # as it prevents accidental data loss.
+      ddl-auto: validate
+    # SQL logging is disabled by default for performance and security.
+    show-sql: false

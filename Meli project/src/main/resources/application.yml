@@ -1,0 +1,17 @@
+# ===============================================
+# Main Application Configuration (Shared Settings)
+# ===============================================
+# This file contains settings common to all environments.
+
+# 1. Default Profile Activation
+# This is a safety measure. If no profile is specified during startup,
+# the application will run in 'dev' mode to prevent accidentally
+# running with production settings.
+spring:
+  profiles:
+    active: dev
+
+# 2. Server Port Configuration
+# This setting is shared across all profiles unless overridden.
+server:
+  port: 8080

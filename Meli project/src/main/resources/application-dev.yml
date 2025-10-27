@@ -1,0 +1,30 @@
+# ===============================================
+# Profile: Development (dev)
+# ===============================================
+# Purpose: For day-to-day development on a local machine.
+# Database: H2 In-Memory (fast startup, no external setup needed).
+
+spring:
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:h2:mem:orderdb_dev
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  
+  # JPA/Hibernate Settings for Development
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      # 'create-drop': Automatically creates the schema on startup and drops it on shutdown.
+      # This ensures a clean slate for every development session.
+      ddl-auto: create-drop
+    # Show SQL queries in the console for easy debugging.
+    show-sql: true
+
+  # H2 Web Console
+  # Enables a web interface to view the in-memory database content.
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
